@@ -1,0 +1,26 @@
+{
+    "include": ["src/**/*", "@types/**/*.d.ts", "package.json"],
+    "compilerOptions": {
+        "composite": true,
+        "target": "esnext",
+        "module": "esnext",
+        "sourceMap": false,
+        "strict": true,
+        "jsx": "preserve",
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitAny": false,
+        "noImplicitReturns": true,
+        "types": ["node"],
+        "paths": {
+            "@addons/*": ["./src/*"],
+            "@t.addons/*": ["./@types/*"]
+        }
+    }
+}

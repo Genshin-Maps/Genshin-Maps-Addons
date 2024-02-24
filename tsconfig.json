@@ -1,0 +1,24 @@
+{
+    "include": ["src/**/*.ts", "src/**/*.svelte", "@types/**/*.d.ts"],
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "module": "esnext",
+        "target": "esnext",
+        "verbatimModuleSyntax": true,
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "useDefineForClassFields": true,
+        "strict": false,
+        "allowJs": true,
+        "checkJs": true,
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "baseUrl": ".",
+        "paths": {
+            "@addons/*": ["src/*"],
+            "@t.addons/*": ["@types/*"]
+        }
+    },
+    "references": [{ "path": "./tsconfig.node.json" }]
+}
