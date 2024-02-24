@@ -4,6 +4,9 @@ on:
   - push
   - pull_request
 
+permissions:
+    contents: write
+
 jobs:
   build:
     name: Build
@@ -49,14 +52,6 @@ jobs:
         with:
           name: production-files
           path: ./dist
-      
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          files: ./dist/*.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Deploy
