@@ -27,6 +27,8 @@ const userscriptConfig: MonkeyUserScript = {
     match: ["https://genshin.gamedot.org/?mid=genshinmaps"],
     downloadURL: `${githubRepo}/raw/gh-pages/userscript/${fileName}`,
     updateURL: `${githubRepo}/raw/gh-pages/userscript/${fileName}`,
+    license: "MIT",
+    
 };
 
 export const buildInfo: BuildInfo = {

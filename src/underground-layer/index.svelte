@@ -299,6 +299,7 @@
         opacity 0.2s ease-in;
       top: 0;
       left: 0;
+      visibility: hidden;
       content-visibility: auto;
       user-select: none;
     }
@@ -325,6 +326,7 @@
       user-select: auto;
       display: block;
       border-radius: 15px 15px 0 0;
+      content-visibility: auto;
       .underground-selection-head {
         padding: 5px;
         height: 20px;
