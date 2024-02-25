@@ -4,6 +4,7 @@
   import { unsafeWindow } from "$";
   import { repository } from "@/package.json";
   import { isTouchScreen } from "@addons/utils";
+  import gmFetch from "@sec-ant/gm-fetch";
 
   let selectionsPos = {};
   loadSelectionPos();
@@ -20,10 +21,11 @@
   let groups = [];
   async function prepareUndergroundImages() {
     undergroundImageMap.clear();
-    groups = await fetch(`${repository.url}/raw/gh-pages/dist/underground_layers.json`).then((res) => res.json());
+    const res = await gmFetch(`${repository.url}/raw/gh-pages/dist/underground_layers.json`);
+    groups = await res.json();
     groups.forEach((group) => {
       group.floors.forEach(async (floor) => {
-        const base64Response = await fetch(floor.image_url)/* await fetch(
+        const base64Response = await gmFetch(floor.image_url)/* await fetch(
           `data:image/png;base64,${floor.image}`
         ) */;
         const blob = await base64Response.blob();

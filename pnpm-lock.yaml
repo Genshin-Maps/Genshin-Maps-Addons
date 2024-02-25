@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  '@sec-ant/gm-fetch':
+    specifier: ^1.2.0
+    version: 1.2.0
+
 devDependencies:
   '@sveltejs/vite-plugin-svelte':
     specifier: ^2.5.3
@@ -372,6 +377,10 @@ packages:
       mkdirp: 1.0.4
       rimraf: 3.0.2
     dev: true
+
+  /@sec-ant/gm-fetch@1.2.0:
+    resolution: {integrity: sha512-BpmXeEbNFGtCmBQ1Bc1iPJRoojNZzXm/M0a7PD6hpjTBCVBfMFEqvMncZ6B1s+XQGgZyhcJmziL1V7Z+eb6A7g==}
+    dev: false
 
   /@sveltejs/vite-plugin-svelte-inspector@1.0.4(@sveltejs/vite-plugin-svelte@2.5.3)(svelte@4.2.12)(vite@4.5.2):
     resolution: {integrity: sha512-zjiuZ3yydBtwpF3bj0kQNV0YXe+iKE545QGZVTaylW3eAzFr+pJ/cwK8lZEaRp4JtaJXhD5DyWAV4AxLh6DgaQ==}

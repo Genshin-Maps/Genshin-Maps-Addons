@@ -28,7 +28,9 @@ const userscriptConfig: MonkeyUserScript = {
     downloadURL: `${githubRepo}/raw/gh-pages/userscript/${fileName}`,
     updateURL: `${githubRepo}/raw/gh-pages/userscript/${fileName}`,
     license: "MIT",
-    
+    grant: "GM_xmlhttpRequest",
+    connect: ["raw.githubusercontent.com", "github.com", "hoyoverse.com"],
+
 };
 
 export const buildInfo: BuildInfo = {

@@ -8,7 +8,7 @@
     "url": "https://github.com/Genshin-Maps/Genshin-Maps-Addons"
   },
   "private": true,
-  "version": "1.1.6",
+  "version": "1.1.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -31,5 +31,8 @@
     "vite": "^4.5.2",
     "vite-plugin-css-injected-by-js": "^3.4.0",
     "vite-plugin-monkey": "^3.5.1"
+  },
+  "dependencies": {
+    "@sec-ant/gm-fetch": "^1.2.0"
   }
 }
