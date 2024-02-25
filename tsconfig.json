@@ -16,6 +16,7 @@
         "lib": ["ESNext", "DOM", "DOM.Iterable"],
         "baseUrl": ".",
         "paths": {
+            "@/*": ["./*"],
             "@addons/*": ["src/*"],
             "@t.addons/*": ["@types/*"]
         }

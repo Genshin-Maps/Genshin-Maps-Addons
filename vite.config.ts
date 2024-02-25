@@ -14,6 +14,7 @@ const addonsFileName = "maps_addons.user.js";
 export default defineConfig({
   resolve: {
       alias: [
+          { find: "@", replacement: resolve(__dirname, '.') },
           { find: "@addons", replacement: resolve(__dirname, './src') },
           { find: "@t.addons", replacement: resolve(__dirname, './@types') },
       ],

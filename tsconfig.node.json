@@ -19,6 +19,7 @@
         "noImplicitReturns": true,
         "types": ["node"],
         "paths": {
+            "@/*": ["./*"],
             "@addons/*": ["./src/*"],
             "@t.addons/*": ["./@types/*"]
         }

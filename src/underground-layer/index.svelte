@@ -2,7 +2,7 @@
   import { isUndergroundMapActive } from "@addons/stores";
   import { onDestroy } from "svelte";
   import { unsafeWindow } from "$";
-  import groups from "@addons/assets/underground_layers.json";
+  import { repository } from "@/package.json";
   import { isTouchScreen } from "@addons/utils";
 
   let selectionsPos = {};
@@ -16,8 +16,11 @@
   let layerScale = unsafeWindow.MAPS_ViewSize / unsafeWindow.MAPS_Size;
 
   let undergroundImageMap = new Map();
-  function prepareUndergroundImages() {
+
+  let groups = [];
+  async function prepareUndergroundImages() {
     undergroundImageMap.clear();
+    groups = await fetch(`${repository.url}/raw/gh-pages/dist/underground_layers.json`).then((res) => res.json());
     groups.forEach((group) => {
       group.floors.forEach(async (floor) => {
         const base64Response = await fetch(floor.image_url)/* await fetch(
