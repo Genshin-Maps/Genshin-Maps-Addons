@@ -10,9 +10,9 @@
   if(unsafeWindow.changeMapsType) {
     HOOKED_changeMapsType = unsafeWindow.changeMapsType;
     unsafeWindow.changeMapsType = function(params, target) {
-        isUndergroundMapActive.update((active) => params?.strTarget?.startsWith("지하"));
-        let ret = HOOKED_changeMapsType.apply(this, arguments);
-        return ret;
+            isUndergroundMapActive.update((active) => params?.strTarget?.startsWith("지하"));
+            let ret = HOOKED_changeMapsType.apply(this, arguments);
+            return ret;
     };
   }
   
@@ -22,17 +22,20 @@
     let mapsObject = unsafeWindow.MAPS_Version[unsafeWindow.MAPS_Type].maps;
     let targetName = value ? "지하" : "지상";
     let mapTargetName = Object.keys(mapsObject).find(key => key.startsWith(targetName));
-    console.log(`targetName: ${targetName}`);
-    console.log(`mapTargetName: ${mapTargetName}`);
     let params = {
       strCode: unsafeWindow.MAPS_Type,
     };
     if(mapTargetName) {
         params.strTarget = mapTargetName;
-        HOOKED_changeMapsType(
-            params,
-            unsafeWindow.MAPS_Type
-        );
+        try {
+            HOOKED_changeMapsType(
+                params,
+                unsafeWindow.MAPS_Type
+            );
+        } catch (err) {
+            console.error(err);
+        }
+        
     }
         
   });
