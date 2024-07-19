@@ -186,7 +186,13 @@
   }
   const unsubscribe = isUndergroundMapActive.subscribe((value) => {
     active = value;
-    if(!active) {
+    if(active) {
+        if (selectionG != groupId || selectionI != index) {
+            selectionG = groupId;
+            selectionI = index;
+            unsafeWindow.objectLayerBase.classList.add("grayscale");
+        }
+    } else {
         unsafeWindow.objectLayerBase.classList.remove("grayscale");
     }
   });
