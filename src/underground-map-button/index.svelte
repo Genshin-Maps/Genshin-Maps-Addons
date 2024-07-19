@@ -39,7 +39,6 @@
 
   function handleClick() {
     isUndergroundMapActive.update((active) => !active);
-    console.log(`click, and current isUndergroundMapActive is ${active}`);
   }
 
   function handleResetSelectionPosition() {
