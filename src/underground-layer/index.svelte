@@ -187,9 +187,7 @@
   const unsubscribe = isUndergroundMapActive.subscribe((value) => {
     active = value;
     if(active) {
-        if (selectionG != groupId || selectionI != index) {
-            selectionG = groupId;
-            selectionI = index;
+        if (selectionG && selectionI) {
             unsafeWindow.objectLayerBase.classList.add("grayscale");
         }
     } else {
