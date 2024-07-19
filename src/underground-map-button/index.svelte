@@ -2,29 +2,44 @@
   import { isUndergroundMapActive } from "@addons/stores";
   import { onDestroy } from "svelte";
   import { unsafeWindow } from "$";
+  import { getKeyByValue } from "@addons/utils";
 
   let active: boolean;
+  let HOOKED_changeMapsType;
+
+  if(unsafeWindow.changeMapsType) {
+    HOOKED_changeMapsType = unsafeWindow.changeMapsType;
+    unsafeWindow.changeMapsType = function(params, target) {
+        isUndergroundMapActive.update((active) => params?.strTarget?.startsWith("지하"));
+        let ret = HOOKED_changeMapsType.apply(this, arguments);
+        return ret;
+    };
+  }
+  
 
   const unsubscribe = isUndergroundMapActive.subscribe((value) => {
     active = value;
-
-    const selector: string = active ? "지하" : "지상";
-    const targetCode = document
-      .querySelector(
-        `#tempMapsTypeList > .point-panel-tag-maps[data-target^="${selector}"]`
-      )
-      ?.getAttribute("data-target");
-    unsafeWindow.changeMapsType(
-      {
-        strCode: unsafeWindow.MAPS_Type,
-        strTarget: targetCode,
-      },
-      unsafeWindow.MAPS_Type
-    );
+    let mapsObject = unsafeWindow.MAPS_Version[unsafeWindow.MAPS_Type].maps;
+    let targetName = value ? "지하" : "지상";
+    let mapTargetName = Object.keys(mapsObject).find(key => key.startsWith(targetName));
+    console.log(`targetName: ${targetName}`);
+    console.log(`mapTargetName: ${mapTargetName}`);
+    let params = {
+      strCode: unsafeWindow.MAPS_Type,
+    };
+    if(mapTargetName) {
+        params.strTarget = mapTargetName;
+        HOOKED_changeMapsType(
+            params,
+            unsafeWindow.MAPS_Type
+        );
+    }
+        
   });
 
   function handleClick() {
     isUndergroundMapActive.update((active) => !active);
+    console.log(`click, and current isUndergroundMapActive is ${active}`);
   }
 
   function handleResetSelectionPosition() {

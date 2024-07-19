@@ -9,50 +9,40 @@
   let selectionsPos = {};
   loadSelectionPos();
   let undergroundLayer: HTMLElement;
-  let _refs = [];
-  $: refs = _refs.filter(Boolean);
+  let undergroundImageLayer: HTMLElement;
+  $: unsafeWindow.MAPS_Type = unsafeWindow.MAPS_Type || 'teyvat';
+  $: unsafeWindow.MAPS_RelativeX = unsafeWindow.MAPS_RelativeX || 0;
+  $: unsafeWindow.MAPS_RelativeY = unsafeWindow.MAPS_RelativeY || 0;
   let selectionG, selectionI;
 
   let active = false;
   let layerScale = unsafeWindow.MAPS_ViewSize / unsafeWindow.MAPS_Size;
 
-  let undergroundImageMap = new Map();
-
-  let groups = [];
-  async function prepareUndergroundImages() {
-    undergroundImageMap.clear();
+  async function parseUndergroundGroups() {
     const res = await gmFetch(`${repository.url}/raw/gh-pages/dist/underground_layers.json`);
-    groups = await res.json();
-    groups.forEach((group) => {
-      group.floors.forEach(async (floor) => {
-        const base64Response = await gmFetch(floor.image_url)/* await fetch(
-          `data:image/png;base64,${floor.image}`
-        ) */;
-        const blob = await base64Response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        undergroundImageMap.set(`${group.id}-${floor.id}`, blobUrl);
-      });
-    });
+    let imageGroups = await res.json();
+    return imageGroups;
   }
 
-  prepareUndergroundImages();
+  async function fetchUndergroundFloorImage(floor) {
+    const base64Response = await gmFetch(floor.image_url);
+    const blob = await base64Response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    return blobUrl;
+  }
 
   function portal(node, { target }) {
     if (target instanceof HTMLElement) {
-      target.appendChild(node);
+        target.appendChild(node);
     }
   }
-
-  function portalRef(node, { target }) {
-    setTimeout(() => {
-      if (refs[target] instanceof HTMLElement) refs[target].appendChild(node);
-    }, 1);
+  function getImageX(x: number, mapCode: string) {
+    const relativeX = unsafeWindow.MAPS_Version[mapCode].relativeX || unsafeWindow.MAPS_RelativeX;
+    return x + relativeX;
   }
-  function getImageX(x: number) {
-    return x + unsafeWindow.MAPS_RelativeX;
-  }
-  function getImageY(y: number) {
-    return y + unsafeWindow.MAPS_RelativeY;
+  function getImageY(y: number, mapCode: string) {
+    const relativeY = unsafeWindow.MAPS_Version[mapCode].relativeY || unsafeWindow.MAPS_RelativeY;
+    return y + relativeY;
   }
   function getSelectionPos(groupId: number) {
     return selectionsPos[groupId] || undefined;
@@ -199,90 +189,102 @@
   });
   export const redraw = () => {
     if (!active) return;
+    unsafeWindow.MAPS_RelativeX = unsafeWindow.MAPS_RelativeX;
+    unsafeWindow.MAPS_RelativeY = unsafeWindow.MAPS_RelativeY;
+    unsafeWindow.MAPS_Type = unsafeWindow.MAPS_Type;
     layerScale = unsafeWindow.MAPS_ViewSize / unsafeWindow.MAPS_Size;
   };
   onDestroy(unsubscribe);
 </script>
 
 <template>
-  {#if active == true}
     <div
       id="mapsLayerUnderground"
       role="tree"
       use:portal={{ target: document.getElementById("mapsLayerPoint") }}
       bind:this={undergroundLayer}
       class="underground-layer {!selectionG && !selectionI ? '' : 'selected'}"
+      class:active
     >
-      {#each groups as group, i (group)}
-        <div
-          role="treeitem"
-          aria-selected={selectionG === group.id}
-          class="underground-selection"
-          tabindex={i}
-          data-group={group.id}
-          use:addDragEvent
-          style="left:{getSelectionPos(group.id)?.[0] ||
-            getImageX(group.centerX)}px; top:{getSelectionPos(group.id)?.[1] ||
-            getImageY(group.centerY)}px;"
-          on:dragstart={() => {
-            return false;
-          }}
+      <div id="mapsLayerUndergroundImage"
+        bind:this={undergroundImageLayer}
+        class="underground-image-layer"
         >
-          <div class="underground-selection-head">
-            {group.name ? group.name : ""}
-          </div>
-          <div
-            role="tablist"
-            class="underground-selection-body"
-            bind:this={_refs[i]}
-          ></div>
-        </div>
-        {#each group.floors as floor, j}
-          <div
-            class="underground-image {selectionG === group.id &&
-            selectionI === floor.id
-              ? 'selected'
-              : ''}"
-            data-group={group.id}
-            data-index={floor.id}
-            data-name={floor.name}
-            style="background-image: {`url(${undergroundImageMap.get(
-              `${group.id}-${floor.id}`
-            )})`};
-            width: {Math.floor(floor.width)}px;
-            height: {Math.floor(floor.height)}px;
-            transform: translate(
-                {Math.floor(getImageX(floor.x) - 5)}px,
-                {Math.floor(getImageY(floor.y) - 3)}px);"
-            draggable="false"
-          />
-          <button
-            role="tab"
-            aria-selected={selectionG === group.id && selectionI === floor.id}
-            tabindex={j}
-            class="underground-selection-item {selectionG === group.id &&
-            selectionI === floor.id
-              ? 'selected'
-              : ''}"
-            use:portalRef={{ target: i }}
-            data-group={group.id}
-            data-index={floor.id}
-            data-name={floor.name}
-            on:click={(e) => {
-              e.stopPropagation();
-              if (!isTouchScreen) {
-                e.preventDefault();
-              }
-              onClickSelection(group.id, floor.id);
-              return false;
-            }}
-          >
-            {floor.name}
-          </button>
+      </div>
+      {#await parseUndergroundGroups() then imageGroups}
+        {#each imageGroups as group, i (group)}
+            {#if group.mapCode == unsafeWindow.MAPS_Type}
+                <div
+                role="treeitem"
+                
+                aria-selected={selectionG === group.id}
+                class="underground-selection"
+                tabindex={i}
+                data-group={group.id}
+                use:addDragEvent
+                style="left:{getSelectionPos(group.id)?.[0] ||
+                    getImageX(group.centerX, group.mapCode)}px; top:{getSelectionPos(group.id)?.[1] ||
+                    getImageY(group.centerY, group.mapCode)}px;"
+                on:dragstart={() => {
+                    return false;
+                }}
+                >
+                    <div class="underground-selection-head">
+                        {group.name ? group.name : ""}
+                    </div>
+                    <div
+                        role="tablist"
+                        class="underground-selection-body"
+                    >
+                        {#each group.floors as floor, j}
+                        {#await fetchUndergroundFloorImage(floor) then imgUrl}
+                        <div
+                            class="underground-image {selectionG === group.id &&
+                            selectionI === floor.id
+                            ? 'selected'
+                            : ''}"
+                            data-group={group.id}
+                            data-index={floor.id}
+                            data-name={floor.name}
+                            style="background-image: {`url(${imgUrl})`};
+                            width: {Math.floor(floor.width)}px;
+                            height: {Math.floor(floor.height)}px;
+                            transform: translate(
+                                {Math.floor(getImageX(floor.x, group.mapCode) - 5)}px,
+                                {Math.floor(getImageY(floor.y, group.mapCode) - 3)}px);"
+                            draggable="false"
+                            use:portal={{ target: document.getElementById("mapsLayerUndergroundImage") }}
+                        />
+                        <button
+                            role="tab"
+                            aria-selected={selectionG === group.id && selectionI === floor.id}
+                            tabindex={j}
+                            class="underground-selection-item {selectionG === group.id &&
+                            selectionI === floor.id
+                            ? 'selected'
+                            : ''}"
+                            data-group={group.id}
+                            data-index={floor.id}
+                            data-name={(floor.name.length > 0) ? floor.name : "이름 없음"}
+                            on:click={(e) => {
+                            e.stopPropagation();
+                            if (!isTouchScreen) {
+                                e.preventDefault();
+                            }
+                            onClickSelection(group.id, floor.id);
+                            return false;
+                            }}
+                        >
+                            {(floor.name.length > 0) ? floor.name : "　"}
+                        </button>
+                        {/await}
+                        {/each}
+                    </div>
+                </div>
+            {/if}
         {/each}
-      {/each}
+    {/await}
     </div>
-  {/if}
 </template>
 
 <style lang="scss">
@@ -293,33 +295,47 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    #mapsLayerUndergroundImage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
 
     .underground-image {
-      position: absolute;
-      background-size: 100%;
-      z-index: -1;
-      opacity: 1;
-      transition:
-        filter 0.2s ease-in,
-        opacity 0.2s ease-in;
-      top: 0;
-      left: 0;
-      visibility: hidden;
-      content-visibility: auto;
-      user-select: none;
+        position: absolute;
+        background-size: 100%;
+        z-index: -1;
+        opacity: 1;
+        transition:
+            filter 0.2s ease-in,
+            opacity 0.2s ease-in;
+        top: 0;
+        left: 0;
+        visibility: hidden;
+        content-visibility: auto;
+        user-select: none;
     }
 
     &.selected .underground-image {
-      visibility: hidden;
-      opacity: 0;
-      /* filter: contrast(0.7) brightness(0.4) grayscale(0.8); */
+        visibility: hidden;
+        opacity: 0;
+        /* filter: contrast(0.7) brightness(0.4) grayscale(0.8); */
     }
 
     &.selected .underground-image.selected {
-      /* filter: none; */
-      visibility: visible;
-      opacity: 1;
-      z-index: 0;
+        /* filter: none; */
+        visibility: visible;
+        opacity: 1;
+        z-index: 0;
     }
 
     .underground-selection {

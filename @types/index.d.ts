@@ -70,6 +70,16 @@ type MapsPinLoad = PinLoad[] & {
 
 type MapsPinDraw = Map<string, MapData[]>;
 
+type MapsVersion = {
+    id: number;
+    maps: any;
+    relativeX: number;
+    relativeY: number;
+    size: number;
+    title: string;
+    update: string;
+}
+
 declare global {
     interface Window {
         objectPanelWindow: HTMLDivElement | null;
@@ -89,6 +99,7 @@ declare global {
         MAPS_ViewPin: MapsViewPin;
         MAPS_PinLoad: MapsPinLoad;
         MAPS_PinDraw: MapsPinDraw;
+        MAPS_Version: MapsVersion;
         drawMapsScale: (...args: unknown[]) => void;
         drawMapsLayer: (...args: unknown[]) => void;
         drawPinObject: (...args: unknown[]) => HTMLDivElement;
