@@ -186,6 +186,9 @@
   }
   const unsubscribe = isUndergroundMapActive.subscribe((value) => {
     active = value;
+    if(!active) {
+        unsafeWindow.objectLayerBase.classList.remove("grayscale");
+    }
   });
   export const redraw = () => {
     if (!active) return;
