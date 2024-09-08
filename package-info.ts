@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import type { MonkeyUserScript } from "vite-plugin-monkey";
-import packageInfo from "./package.json" assert { type: "json" };
+import packageInfo from "./package.json" with { type: "json" };
 
 export interface BuildInfo {
     entryPoint: string;
