@@ -1,4 +1,5 @@
 import { sveltePreprocess } from 'svelte-preprocess'
+import adapter from "svelte-adapter-bun";
 
 export default {
     // Consult https://github.com/sveltejs/svelte-preprocess
