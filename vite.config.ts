@@ -1,8 +1,6 @@
 import { resolve } from "path";
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import sveltePreprocess from "svelte-preprocess";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import monkey from 'vite-plugin-monkey';
 import { buildInfo } from "./package-info";
 
@@ -20,10 +18,7 @@ export default defineConfig({
       ],
   },
   plugins: [
-    svelte({
-        preprocess: sveltePreprocess({ scss: true, typescript: true }),
-    }),
-    cssInjectedByJsPlugin(),
+    svelte(),
     monkey({
       entry: buildInfo.entryPoint,
       userscript: buildInfo.userscriptConfig,
