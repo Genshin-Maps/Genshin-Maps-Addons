@@ -13,6 +13,12 @@ dist-ssr
 out
 *.local
 
+# lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
